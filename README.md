@@ -4,7 +4,7 @@ The keynote has been presented first on [PWA intro and Case studies, Wednesday, 
 
 ## Live demo
 
-This presenation is available online. [LIVE DEMO]()
+This presenation is available online. [LIVE DEMO](https://goo.gl/T0HhIB)
 
 ### Useful Resources
 
