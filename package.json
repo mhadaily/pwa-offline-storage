@@ -26,6 +26,7 @@
     "README.md"
   ],
   "dependencies": {
+    "lokijs": "^1.4.3",
     "shower-core": "^2.1.0",
     "shower-material": "^1.0.11",
     "shower-ribbon": "^2.0.10"

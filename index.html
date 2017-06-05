@@ -11,6 +11,7 @@
 
 	<header class="caption">
 		<h1>Offline Storage for Progressive Web Applications</h1>
+		<h3>Dynamic Content</h3>
 		<p>Majid Hajian</p>
 	</header>
 
@@ -118,7 +119,7 @@
 		<ol>
 		<li>Static Assets
 			<ul>
-				<li>Application Cache (Part of Service Workers)</li>
+				<li>Application Cache (Part of Service Workers) "cache-manifest"</li>
 			</ul>
 		</li>
 		<li>Dynamic Content <span  class="next" style="color:red">&#10004;</span>
@@ -258,7 +259,7 @@
 			<li class="next">Cons
 			<ul>
 				<li>Relatively Complex API</li>
-				<li>Buggy Implementation in Safari!</li>
+				<li>Buggy Implementation in Safari < v10.1!</li>
 			</ul>
 			</li>
 		</ul>
@@ -335,33 +336,182 @@
 	</section>
 
 	<section class="slide">
-		<h2>We've got a problem?</h2>
+		<h2>There is a problem?</h2>
 		<div class="next center">
 			<img src="pictures/browsers.jpg" width="100%">
 		</div>
 	</section>
 
 	<section class="slide">
-		<h2>Wrappers & Polyfills</h2>
+		<h2>Wrappers, Polyfills and New Options</h2>
 		<ul>
 			<li class="next"><a href="https://github.com/localForage/localForage">localForage</a> (~8KB, promises,good legacy browser support)</li>
-			<li class="next"><a href="https://www.npmjs.com/package/idb-keyval">IDB-keyval</a> (500 byte alternative to localForage, for modern browsers)</li>
+			<li class="next"><a href="https://www.npmjs.com/package/idb-keyval">IDB-keyval</a> (500 byte alternative to localForage, for modern browsers, promise-based)</li>
 			<li class="next"><a href="https://www.npmjs.com/package/idb">IDB-promised</a> (~2k, same IndexedDB API, but with promises)</li>
-			<li class="next"><a href="http://dexie.org/">Dexie</a> (~16KB, promises, complex queries, secondary indices)</li>
+			<li class="next"><a href="http://dexie.org/">Dexie</a> (~16KB, promises, complex queries, secondary indices, FP style)</li>
 			<li class="next"><a href="https://pouchdb.com/">PouchDB</a> (~45KB (supports <a href="https://pouchdb.com/2016/06/06/introducing-pouchdb-custom-builds.html">custombuilds</a>),synchronization)</li>
-			<li class="next"><a href="https://github.com/google/lovefield">Lovefield</a> (relational)</li>
-			<li class="next"><a href="http://lokijs.org/#/">LokiJS</a> (in-memory)</li>
-			<li class="next"i><a href="https://github.com/yathit/ydn-db">ydn-db</a> (dexie-like, works with WebSQL)</li>
+			<li class="next"><a href="https://github.com/google/lovefield">Lovefield From Google</a> (SQL-like APIs, modern browsers support)</li>
+			<li class="next"><a href="http://lokijs.org/#/">LokiJS</a> (in-memory, Monogodb-like api or FP style,)</li>
+			<li class="next"i><a href="https://github.com/yathit/ydn-db">ydn-db</a> (dexie-like, Good Supported browsers, supporting version migration, advanced query, SQL and transaction.)</li>
 		</ul>
+	</section>
+
+	<section class="slide">
+		<h2>Data Synchronization</h2>
+		<ol>
+			<li><a href="https://github.com/localForage/localForage">localForage</a> (~8KB, promises,good legacy browser support)</li>
+			<li><a href="https://pouchdb.com/">PouchDB</a> (~45KB, synchronization, couchDB)</li>
+			<li><a href="http://lokijs.org/#/">LokiJS</a> (in-memory)</li>
+		</ol>
+	</section>
+
+	<section class="slide">
+		<h2>LocalForage</h2>
+		<ul class="double">
+			<li>Lightweight ~8KB gzip</li>
+			<li>localStorage-like API</li>
+			<li>Callback and Promise</li>
+			<li>Legacy browsers</li>
+			<li>Native JS objects,serialized to JSON, ArrayBuffers, Blobs, and TypedArrays.</li>
+			<li>TypeScript</li>
+			<li>Front-end Frameworks</li>
+		</ul>
+		<div class="double">
+			 <img src='pictures/localforage.jpg' width="100%">
+		</div>
+	</section>
+
+	<section class="slide">
+		<h2>LocalForage Sample Code</h2>
+		<pre>
+			<code>npm install localforage</code>
+			<code>localforage.<mark class="important">setItem</mark>('key', 'value', function (err) {</code>
+			<code><span class="comment">// if err is non-null, we got an error</span></code>
+			<code>localforage.<mark class="important">getItem</mark>('key', function (err, value) {</code>
+			<code><span class="comment">// if err is non-null, we got an error. otherwise, value is the value</span></code>
+			<code>});</code>
+			<code>});</code>
+		</pre>
+	</section>
+
+	<section class="slide">
+		<h2>PouchDB</h2>
+		<ul class="double">
+			<li>~46KB (gzipped)</li>
+			<li>Basically a CoudDb in Browser</li>
+			<li>Easy to sync</li>
+			<li>Well-supported browsers</li>
+			<li>underhood IndexedDB and fallback to websql</li>
+			<li>Cordova/PhoneGap, NW.js, Electron, and Chrome apps</li>
+			<li>Angular, React, Ember, Backbone, Vue.js and ...</li>
+			<li>Fully support ES6 and ES7 (Async/Await) and es5-shim for legacy environment</li>
+			<li>LocalStorage and in-memory adapters</li>
+			<li>Node.js support (LevelDB)</li>
+		</ul>
+	</section>
+
+	<section class="slide">
+		<style>
+			.evensmaller{
+				font-size:30%
+			}
+		</style>
+		<pre class="evensmaller">
+			<code>const db = new PouchDB('customers');</code>
+			<code>db.changes({ continuous: true, onChange: updateDOM });</code>
+			<code>function updateDOM() {</code>
+			<code class="mark">	db.allDocs({ include_docs: true, descending: false}, </code>
+			<code class="mark">					(err, doc) => doc.rows.map(row => customersList.push(row.doc));</code>
+			<code>}</code>
+			<code>const CustomerModel =  () => {</code>
+			<code>	this.addCustomer = function () {</code>
+			<code>		const customer = {</code>
+			<code>			_id: new Date().toISOString(),</code>
+			<code>			firstname: "", lastname: "", email: "",</code>
+			<code>		};</code>
+			<code>		db.put(customer, callback(err, result) => {</code>
+			<code>			if (err) return console.log(err);</code>
+			<code>			console.log('Customer added.');</code>
+			<code>		});</code>
+			<code>	};</code>
+			<code>	this.updateCustomer =  (customer) => {</code>
+			<code>		db.put(customer, callback(err, result) => {</code>
+			<code>			if (err) return console.log(err);</code>
+			<code>			console.log('Customer added.');</code>
+			<code>		});</code>
+			<code>	};</code>
+			<code>	this.removeCustomer =  (customer) => {</code>
+			<code>		db.remove(customer);</code>
+			<code>	};</code>
+			<code>	this.syncDB = function () {</code>
+			<code>		<mark class="important"> remoteCouchDB = 'http://yourcouchdbserver.com/customers';</mark></code>
+			<code class="mark">		const options = { complete: syncDBCompleted };</code>
+			<code class="mark">		db.replicate.to(remoteCouchDB, options);</code>
+			<code class="mark">		db.replicate.from(remoteCouchDB, options);</code>
+			<code>	}};</code>
+			<code>function syncDBCompleted() { 	console.log('Synchronization completed!'); }</code>
+			<code>updateDOM();</code>
+		</pre>
 	</section>
 
 
 	<section class="slide">
-		<h2>Wrappers & Polyfills</h2>
-		<ul>
-			<li><a href="https://github.com/localForage/localForage">localForage</a> (~8KB, promises,good legacy browser support)</li>
-			<li><a href="https://pouchdb.com/">PouchDB</a> (~45KB (supports <a href="https://pouchdb.com/2016/06/06/introducing-pouchdb-custom-builds.html">custombuilds</a>),synchronization)</li>
+		<h2>Lokijs</h2>
+		<ul class="double">
+			<li>Fully written in Javascript</li>
+			<li>Node.js and Browser</li>
+			<li>Document-oriented, nosql-style</li>
+			<li>JSON, dump to everywhere!</li>
+			<li>in-memory, fast</li>
+			<li>~15kb minified gizp</li>
+			<li>http://obeliskos.com/LokiSandbox/</li>
+			<img width="100%" src="pictures/lokijs.jpg">
 		</ul>
+	</section>
+
+	<selection class="slide">
+		<pre class="smaller">
+				<code>var lfAdapter = new LokiLocalForageAdapter("lokidb");</code>
+				<code>var db = new loki('databaseName',{ <span class="comment">// autoload: true, // autoloadCallback : lokidb_loadHandler,</code>
+				<code>											//autosaveInterval: 10000,</span> autosave: true,</code>
+				<code>											adapter: lfAdapter<span class="comment"> // <- required</span>});</code>
+				<code>var users = db.addCollection('users'); <span class="comment">// Add a collection to the database</span></code>
+				<code><span class="comment">// Add some documents to the collection</span></code>
+				<code class="mark">users.insert([{ name : 'user1', owner: 'fuser1', age: '30' },</code>
+				<code class="mark">	{ name : 'user2', owner: 'fuser2', age: '40' },</code>
+				<code class="mark">	{ name : 'user3', owner: 'fuser3', age: '50' },</code>
+				<code class="mark">	{ name : 'user4', owner: 'fuser4', age: '60' }]);</code>
+				<code class="mark"><span class="comment">// Find and update an existing document</span></code>
+				<code>var user3 = users.findOne({'name': 'user3'});</code>
+				<code>user3.owner = 'Majid'; <mark class="important">users.update(user3);</mark></code>
+				<code>var results = users.where(obj => obj.age >= 35}); <span class="comment">// Query</span></code>
+				<code>var resultsFPstyle = users.chain()</code>
+				<code>				.find({ age: {'$gte': 35} })</code>
+				<code>				.simplesort('name')</code>
+				<code>				.data();</code>
+				<code>db.loadDatabase({}, function() {</code>
+				<code>lokidb_loadHandler(); <span class="comment">// <- load any collections in here</span></code>
+				<code>});</code>
+		</pre>
+	</selection>
+
+
+	<section class="slide grid center">
+		<h2>There are still more options!</h2>
+		<video width="420" height="340" autoplay loop>
+		<source src="pictures/noo.mp4" type="video/mp4">
+			Your browser does not support the video tag.
+		</video>
+	</section>
+
+	<section class="slide center">
+		<br>
+		<h3>Slides and Sample codes are availabe on Github</h3>
+		<h3>https://goo.gl/T0HhIB</h3>
+		<h3>https://github.com/mhadaily/pwa-offline-storage</h3>
+		<br>
+		<h3><img src="pictures/t.svg" width="30px"> @mhadaily</h3>
+		<h2>Thank you</h2>
 	</section>
 
 	<footer class="badge">
@@ -371,5 +521,9 @@
 	<div class="progress"></div>
 
 	<script src="node_modules/shower-core/shower.min.js"></script>
+	<script src="js/localforage.min.js"></script>
+	<script src="lokijs/lokijs.min.js"></script>
+	<script src="js/loki-localforage-adapter.js"></script>
+
 </body>
 </html>

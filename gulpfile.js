@@ -22,7 +22,8 @@ gulp.task('prepare', () => {
 			'!LICENSE.md',
 			'!README.md',
 			'!gulpfile.js',
-			'!package.json'
+			'!package.json',
+			'!package-lock.json',
 		])
 		.pipe(replace(
 			/(<link rel="stylesheet" href=")(node_modules\/shower-)([^\/]*)\/(.*\.css">)/g,
@@ -40,6 +41,15 @@ gulp.task('prepare', () => {
 		})
 		.pipe(rename( (path) => {
 			path.dirname = 'shower/' + path.dirname;
+		}));
+
+	const lokijs = gulp.src([
+			'lokijs.min.js'
+		], {
+			cwd: 'node_modules/lokijs/build'
+		})
+		.pipe(rename( (path) => {
+			path.dirname = 'lokijs/' + path.dirname;
 		}));
 
 	const material = gulp.src([
@@ -66,7 +76,7 @@ gulp.task('prepare', () => {
 			'$1../../$3', { skipBinary: true }
 		));
 
-	return merge(shower, core, themes)
+	return merge(shower, core, themes, lokijs)
 		.pipe(gulp.dest('prepared'))
 		.pipe(livereload());
 
